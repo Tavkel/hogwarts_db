@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "FACULTIES")
+@Table(name = "faculties")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Faculty extends SafeDeleted {
     @Id

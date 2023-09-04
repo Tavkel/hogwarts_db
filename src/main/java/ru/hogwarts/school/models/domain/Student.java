@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "STUDENTS")
+@Table(name = "students")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Student extends SafeDeleted {
     @Id
