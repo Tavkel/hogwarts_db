@@ -25,8 +25,14 @@ public class FacultyServiceImpl implements FacultyService {
     public FacultyDto addFaculty(FacultyDto facultyDto) {
         var faculty = FacultyMapper.MAPPER.toFaculty(facultyDto);
         var check = facultyRepository.findByName(faculty.getName());
-        if (check.isPresent() && !check.get().getDeleted()) {
-            throw new EntryAlreadyExistsException();
+        if (check.isPresent()) {
+            if (check.get().getDeleted()) {
+                check.get().setDeleted(false);
+                check.get().setName(faculty.getName());
+                check.get().setColour(faculty.getColour());
+                return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(check.get()));
+            }
+            throw new EntryAlreadyExistsException("This faculty already exists.");
         }
         return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(faculty));
     }
@@ -37,7 +43,7 @@ public class FacultyServiceImpl implements FacultyService {
         if (result.isPresent() && !result.get().getDeleted()) {
             return FacultyMapper.MAPPER.fromFaculty(result.get());
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Faculty not found.");
         }
     }
 
@@ -48,7 +54,7 @@ public class FacultyServiceImpl implements FacultyService {
         if (result.isPresent()) {
             return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(faculty));
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Faculty not found.");
         }
     }
 
@@ -59,7 +65,7 @@ public class FacultyServiceImpl implements FacultyService {
             result.get().setDeleted(true);
             return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(result.get()));
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Faculty not found.");
         }
     }
 

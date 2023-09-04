@@ -22,9 +22,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto addStudent(StudentDto studentDto) {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
-        var check = studentRepository.findByName(student.getName());
-        if (check.isPresent() && !check.get().getDeleted()) {
-            throw new EntryAlreadyExistsException();
+        var check = studentRepository.findFirstByName(student.getName());
+        if (check.isPresent()) {
+            if (check.get().getDeleted()){
+                check.get().setDeleted(false);
+                check.get().setName(student.getName());
+                check.get().setAge(student.getAge());
+                check.get().setFaculty(student.getFaculty());
+                return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(check.get()));
+            }
+            throw new EntryAlreadyExistsException("This student already exists.");
         }
         return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(student));
     }
@@ -35,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
         if (result.isPresent() && !result.get().getDeleted()) {
             return StudentMapper.MAPPER.fromStudent(result.get());
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Student not found.");
         }
     }
 
@@ -46,18 +53,18 @@ public class StudentServiceImpl implements StudentService {
         if (result.isPresent()) {
             return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(student));
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Student not found.");
         }
     }
 
     @Override
     public StudentDto removeStudent(long id) {
         var result = studentRepository.findById(id);
-        if (result.isPresent()) {
+        if (result.isPresent() && !result.get().getDeleted()) {
             result.get().setDeleted(true);
             return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(result.get()));
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Student not found");
         }
     }
 
