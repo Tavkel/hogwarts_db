@@ -17,8 +17,8 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
-    @GetMapping()
-    public ResponseEntity<FacultyDto> getFaculty(@RequestParam long id) {
+    @GetMapping(path = "{id}")
+    public ResponseEntity<FacultyDto> getFaculty(@PathVariable long id) {
         return new ResponseEntity<>(facultyService.getFacultyById(id), HttpStatus.OK);
     }
 
@@ -40,13 +40,13 @@ public class FacultyController {
         }
     }
     
-    @DeleteMapping
-    public ResponseEntity<FacultyDto> deleteFaculty(@RequestParam long id) {
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<FacultyDto> deleteFaculty(@PathVariable long id) {
         return new ResponseEntity<>(facultyService.removeFaculty(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "colour/{colour}")
-    public ResponseEntity<List<FacultyDto>> getFacultiesByColour(@PathVariable String colour) {
+    @GetMapping(path = "/byColour")
+    public ResponseEntity<List<FacultyDto>> getFacultiesByColour(@RequestParam String colour) {
         return new ResponseEntity<>(facultyService.getFacultiesByColour(colour), HttpStatus.OK);
     }
 }

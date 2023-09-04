@@ -17,8 +17,8 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping()
-    public ResponseEntity<StudentDto> getStudent(@RequestParam Long id) {
+    @GetMapping(path = "{id}")
+    public ResponseEntity<StudentDto> getStudent(@PathVariable long id) {
         return new ResponseEntity<>(studentService.getStudentById(id), HttpStatus.OK);
     }
 
@@ -40,13 +40,13 @@ public class StudentController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<StudentDto> deleteStudent(@RequestParam long id) {
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<StudentDto> deleteStudent(@PathVariable long id) {
         return new ResponseEntity<>(studentService.removeStudent(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/age/{age}")
-    public ResponseEntity<List<StudentDto>> getStudentsByAge(@PathVariable int age) {
+    @GetMapping(path = "/byAge")
+    public ResponseEntity<List<StudentDto>> getStudentsByAge(@RequestParam int age) {
         return new ResponseEntity<>(studentService.getStudentsByAge(age), HttpStatus.OK);
     }
 }
