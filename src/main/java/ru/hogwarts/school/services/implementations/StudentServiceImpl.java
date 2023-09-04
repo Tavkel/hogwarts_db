@@ -7,7 +7,9 @@ import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -57,5 +59,12 @@ public class StudentServiceImpl implements StudentService {
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    @Override
+    public List<StudentDto> getStudentsByAge(int age) {
+        var dbResponse = studentRepository.findByAge(age);
+
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
     }
 }

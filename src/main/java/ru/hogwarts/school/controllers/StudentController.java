@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/student")
 public class StudentController {
@@ -34,12 +36,17 @@ public class StudentController {
         if (student.getId() == 0) {
             throw new IllegalArgumentException();
         } else {
-            return  new ResponseEntity<>(studentService.updateStudent(student), HttpStatus.OK);
+            return new ResponseEntity<>(studentService.updateStudent(student), HttpStatus.OK);
         }
     }
 
     @DeleteMapping
     public ResponseEntity<StudentDto> deleteStudent(@RequestParam long id) {
         return new ResponseEntity<>(studentService.removeStudent(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/age/{age}")
+    public ResponseEntity<List<StudentDto>> getStudentsByAge(@PathVariable int age) {
+        return new ResponseEntity<>(studentService.getStudentsByAge(age), HttpStatus.OK);
     }
 }

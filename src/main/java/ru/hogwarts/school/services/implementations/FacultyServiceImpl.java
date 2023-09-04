@@ -8,7 +8,9 @@ import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.services.interfaces.FacultyService;
 import ru.hogwarts.school.services.repositories.FacultyRepository;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class FacultyServiceImpl implements FacultyService {
@@ -59,5 +61,11 @@ public class FacultyServiceImpl implements FacultyService {
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    @Override
+    public List<FacultyDto> getFacultiesByColour(String colour) {
+        var dbResponse = facultyRepository.findByColour(colour);
+        return dbResponse.stream().map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
     }
 }

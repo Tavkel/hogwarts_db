@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.services.interfaces.FacultyService;
 import ru.hogwarts.school.models.dto.FacultyDto;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/faculty")
 public class FacultyController {
@@ -16,7 +18,7 @@ public class FacultyController {
     }
 
     @GetMapping()
-    public ResponseEntity<FacultyDto> getFaculty(@RequestParam Long id) {
+    public ResponseEntity<FacultyDto> getFaculty(@RequestParam long id) {
         return new ResponseEntity<>(facultyService.getFacultyById(id), HttpStatus.OK);
     }
 
@@ -41,5 +43,10 @@ public class FacultyController {
     @DeleteMapping
     public ResponseEntity<FacultyDto> deleteFaculty(@RequestParam long id) {
         return new ResponseEntity<>(facultyService.removeFaculty(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "colour/{colour}")
+    public ResponseEntity<List<FacultyDto>> getFacultiesByColour(@PathVariable String colour) {
+        return new ResponseEntity<>(facultyService.getFacultiesByColour(colour), HttpStatus.OK);
     }
 }
