@@ -24,7 +24,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public FacultyDto addFaculty(FacultyDto facultyDto) {
         var faculty = FacultyMapper.MAPPER.toFaculty(facultyDto);
-        var check = facultyRepository.findByName(faculty.getName());
+        var check = facultyRepository.findFirstByName(faculty.getName());
         if (check.isPresent()) {
             if (check.get().getDeleted()) {
                 check.get().setDeleted(false);
