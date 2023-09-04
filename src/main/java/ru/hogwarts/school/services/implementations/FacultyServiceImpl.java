@@ -2,7 +2,9 @@ package ru.hogwarts.school.services.implementations;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
+import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.models.domain.Faculty;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.services.interfaces.FacultyService;
 import ru.hogwarts.school.services.repositories.FacultyRepository;
 
@@ -18,40 +20,42 @@ public class FacultyServiceImpl implements FacultyService {
 
     //TODO: find out safeDeleted prop and equals interaction
     @Override
-    public Faculty addFaculty(Faculty faculty) {
+    public FacultyDto addFaculty(FacultyDto facultyDto) {
+        var faculty = FacultyMapper.MAPPER.toFaculty(facultyDto);
         var check = facultyRepository.findByName(faculty.getName());
         if (check.isPresent() && !check.get().getDeleted()) {
             throw new EntryAlreadyExistsException();
         }
-        return facultyRepository.saveAndFlush(faculty);
+        return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(faculty));
     }
 
     @Override
-    public Faculty getFacultyById(long id) {
+    public FacultyDto getFacultyById(long id) {
         var result = facultyRepository.findById(id);
         if (result.isPresent() && !result.get().getDeleted()) {
-            return result.get();
+            return FacultyMapper.MAPPER.fromFaculty(result.get());
         } else {
             throw new NoSuchElementException();
         }
     }
 
     @Override
-    public Faculty updateFaculty(Faculty faculty) {
+    public FacultyDto updateFaculty(FacultyDto facultyDto) {
+        var faculty = FacultyMapper.MAPPER.toFaculty(facultyDto);
         var result = facultyRepository.findById(faculty.getId());
         if (result.isPresent()) {
-            return facultyRepository.saveAndFlush(faculty);
+            return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(faculty));
         } else {
             throw new NoSuchElementException();
         }
     }
 
     @Override
-    public Faculty removeFaculty(long id) {
+    public FacultyDto removeFaculty(long id) {
         var result = facultyRepository.findById(id);
         if (result.isPresent()) {
             result.get().setDeleted(true);
-            return facultyRepository.saveAndFlush(result.get());
+            return FacultyMapper.MAPPER.fromFaculty(facultyRepository.saveAndFlush(result.get()));
         } else {
             throw new NoSuchElementException();
         }

@@ -3,8 +3,8 @@ package ru.hogwarts.school.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
-import ru.hogwarts.school.models.domain.Student;
 
 @RestController
 @RequestMapping("/student")
@@ -16,12 +16,12 @@ public class StudentController {
     }
 
     @GetMapping()
-    public ResponseEntity<Student> getStudent(@RequestParam Long id) {
+    public ResponseEntity<StudentDto> getStudent(@RequestParam Long id) {
         return new ResponseEntity<>(studentService.getStudentById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Student> addStudent(@RequestBody Student student) {
+    public ResponseEntity<StudentDto> addStudent(@RequestBody StudentDto student) {
         if (student.getId() != 0) {
             throw new IllegalArgumentException();
         } else {
@@ -30,7 +30,7 @@ public class StudentController {
     }
 
     @PutMapping
-    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
+    public ResponseEntity<StudentDto> updateStudent(@RequestBody StudentDto student) {
         if (student.getId() == 0) {
             throw new IllegalArgumentException();
         } else {
@@ -39,7 +39,7 @@ public class StudentController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Student> deleteStudent(@RequestParam long id) {
+    public ResponseEntity<StudentDto> deleteStudent(@RequestParam long id) {
         return new ResponseEntity<>(studentService.removeStudent(id), HttpStatus.OK);
     }
 }

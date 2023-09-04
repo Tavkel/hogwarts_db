@@ -1,10 +1,10 @@
 package ru.hogwarts.school.services.interfaces;
 
-import ru.hogwarts.school.models.domain.Faculty;
+import ru.hogwarts.school.models.dto.FacultyDto;
 
 public interface FacultyService {
-    Faculty addFaculty(Faculty faculty);
-    Faculty getFacultyById(long id);
-    Faculty updateFaculty(Faculty faculty);
-    Faculty removeFaculty(long id);
+    FacultyDto addFaculty(FacultyDto faculty);
+    FacultyDto getFacultyById(long id);
+    FacultyDto updateFaculty(FacultyDto faculty);
+    FacultyDto removeFaculty(long id);
 }

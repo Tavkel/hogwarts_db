@@ -2,9 +2,10 @@ package ru.hogwarts.school.services.implementations;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
+import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 import ru.hogwarts.school.services.repositories.StudentRepository;
-import ru.hogwarts.school.models.domain.Student;
 
 import java.util.NoSuchElementException;
 
@@ -17,40 +18,42 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student addStudent(Student student) {
+    public StudentDto addStudent(StudentDto studentDto) {
+        var student = StudentMapper.MAPPER.toStudent(studentDto);
         var check = studentRepository.findByName(student.getName());
         if (check.isPresent() && !check.get().getDeleted()) {
             throw new EntryAlreadyExistsException();
         }
-        return studentRepository.saveAndFlush(student);
+        return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(student));
     }
 
     @Override
-    public Student getStudentById(long id) {
+    public StudentDto getStudentById(long id) {
         var result = studentRepository.findById(id);
         if (result.isPresent() && !result.get().getDeleted()) {
-            return result.get();
+            return StudentMapper.MAPPER.fromStudent(result.get());
         } else {
             throw new NoSuchElementException();
         }
     }
 
     @Override
-    public Student updateStudent(Student student) {
+    public StudentDto updateStudent(StudentDto studentDto) {
+        var student = StudentMapper.MAPPER.toStudent(studentDto);
         var result = studentRepository.findById(student.getId());
         if (result.isPresent()) {
-            return studentRepository.saveAndFlush(student);
+            return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(student));
         } else {
             throw new NoSuchElementException();
         }
     }
 
     @Override
-    public Student removeStudent(long id) {
+    public StudentDto removeStudent(long id) {
         var result = studentRepository.findById(id);
         if (result.isPresent()) {
             result.get().setDeleted(true);
-            return studentRepository.saveAndFlush(result.get());
+            return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(result.get()));
         } else {
             throw new NoSuchElementException();
         }

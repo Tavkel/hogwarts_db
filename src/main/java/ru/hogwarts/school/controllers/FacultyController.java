@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.services.interfaces.FacultyService;
-import ru.hogwarts.school.models.domain.Faculty;
+import ru.hogwarts.school.models.dto.FacultyDto;
 
 @RestController
 @RequestMapping("/faculty")
@@ -16,12 +16,12 @@ public class FacultyController {
     }
 
     @GetMapping()
-    public ResponseEntity<Faculty> getFaculty(@RequestParam Long id) {
+    public ResponseEntity<FacultyDto> getFaculty(@RequestParam Long id) {
         return new ResponseEntity<>(facultyService.getFacultyById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
+    public ResponseEntity<FacultyDto> addFaculty(@RequestBody FacultyDto faculty) {
         if (faculty.getId() != 0) {
             throw new IllegalArgumentException();
         } else {
@@ -30,7 +30,7 @@ public class FacultyController {
     }
 
     @PutMapping
-    public ResponseEntity<Faculty> updateFaculty(@RequestBody Faculty faculty) {
+    public ResponseEntity<FacultyDto> updateFaculty(@RequestBody FacultyDto faculty) {
         if (faculty.getId() == 0) {
             throw new IllegalArgumentException();
         } else {
@@ -39,7 +39,7 @@ public class FacultyController {
     }
     
     @DeleteMapping
-    public ResponseEntity<Faculty> deleteFaculty(@RequestParam long id) {
+    public ResponseEntity<FacultyDto> deleteFaculty(@RequestParam long id) {
         return new ResponseEntity<>(facultyService.removeFaculty(id), HttpStatus.OK);
     }
 }

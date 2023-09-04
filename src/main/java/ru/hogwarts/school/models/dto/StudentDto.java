@@ -4,16 +4,15 @@ public class StudentDto {
     private Long id;
     private String name;
     private Integer age;
+    private int facultyId;
     private String facultyName;
 
-    private Boolean deleted;
-
-    public boolean getDeleted() {
-        return deleted;
+    public int getFacultyId() {
+        return facultyId;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setFacultyId(int facultyId) {
+        this.facultyId = facultyId;
     }
 
     public Long getId() {
