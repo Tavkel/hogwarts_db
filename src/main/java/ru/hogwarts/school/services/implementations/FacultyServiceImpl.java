@@ -24,7 +24,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public FacultyDto addFaculty(FacultyDto facultyDto) {
         var faculty = FacultyMapper.MAPPER.toFaculty(facultyDto);
-        var check = facultyRepository.findFirstByName(faculty.getName());
+        var check = facultyRepository.findFirstByNameIgnoreCase(faculty.getName());
         if (check.isPresent()) {
             if (check.get().getDeleted()) {
                 check.get().setDeleted(false);
@@ -71,7 +71,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public List<FacultyDto> getFacultiesByColour(String colour) {
-        var dbResponse = facultyRepository.findByColour(colour);
+        var dbResponse = facultyRepository.findByColourIgnoreCase(colour);
         return dbResponse.stream().map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
     }
 }

@@ -22,7 +22,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto addStudent(StudentDto studentDto) {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
-        var check = studentRepository.findFirstByName(student.getName());
+        var check = studentRepository.findFirstByNameIgnoreCase(student.getName());
         if (check.isPresent()) {
             if (check.get().getDeleted()){
                 check.get().setDeleted(false);
