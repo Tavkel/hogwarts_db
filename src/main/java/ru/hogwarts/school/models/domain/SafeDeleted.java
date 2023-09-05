@@ -12,6 +12,10 @@ public abstract class SafeDeleted {
     public SafeDeleted() {
     }
 
+    public SafeDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Boolean getDeleted() {
         return deleted;
     }

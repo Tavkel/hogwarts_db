@@ -72,6 +72,6 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public List<FacultyDto> getFacultiesByColour(String colour) {
         var dbResponse = facultyRepository.findByColourIgnoreCase(colour);
-        return dbResponse.stream().map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
+        return dbResponse.stream().filter(f -> !f.getDeleted()).map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
     }
 }

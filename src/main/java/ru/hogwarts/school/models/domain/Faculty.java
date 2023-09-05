@@ -39,6 +39,13 @@ public class Faculty extends SafeDeleted {
         this.colour = colour;
     }
 
+    public Faculty(Long id, String name, String colour, boolean deleted) {
+        super(deleted);
+        this.id = id;
+        this.name = name;
+        this.colour = colour;
+    }
+
     public Long getId() {
         return id;
     }
@@ -70,12 +77,13 @@ public class Faculty extends SafeDeleted {
         Faculty faculty = (Faculty) o;
         return Objects.equals(id, faculty.id)
                 && Objects.equals(name, faculty.name)
-                && Objects.equals(colour, faculty.colour);
+                && Objects.equals(colour, faculty.colour)
+                && Objects.equals(getDeleted(), faculty.getDeleted());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, colour);
+        return Objects.hash(id, name, colour, getDeleted());
     }
 
     @Override
