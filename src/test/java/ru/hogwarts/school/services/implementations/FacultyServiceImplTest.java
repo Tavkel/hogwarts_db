@@ -99,6 +99,7 @@ class FacultyServiceImplTest {
         long id = 2L;
 
         assertEquals(SLYTHERIN_DTO, sut.getFacultyById(id));
+        verify(facultyRepository, times(1)).findById(id);
     }
 
     @Test

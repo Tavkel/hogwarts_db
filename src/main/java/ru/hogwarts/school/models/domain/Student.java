@@ -33,6 +33,14 @@ public class Student extends SafeDeleted {
         this.faculty = new Faculty(facultyId);
     }
 
+    public Student(Boolean deleted, Long id, String name, Integer age, long facultyId) {
+        super(deleted);
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.faculty = new Faculty(facultyId);
+    }
+
     public Long getId() {
         return id;
     }

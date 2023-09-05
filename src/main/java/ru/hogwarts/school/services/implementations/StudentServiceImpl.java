@@ -49,7 +49,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto updateStudent(StudentDto studentDto) {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
-        var result = studentRepository.findById(student.getId());
+        var result = studentRepository.findById(studentDto.getId());
         if (result.isPresent()) {
             return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(student));
         } else {
@@ -64,7 +64,7 @@ public class StudentServiceImpl implements StudentService {
             result.get().setDeleted(true);
             return StudentMapper.MAPPER.fromStudent(studentRepository.saveAndFlush(result.get()));
         } else {
-            throw new NoSuchElementException("Student not found");
+            throw new NoSuchElementException("Student not found.");
         }
     }
 
