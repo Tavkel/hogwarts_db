@@ -10,4 +10,5 @@ public interface FacultyService {
     FacultyDto updateFaculty(FacultyDto faculty);
     FacultyDto removeFaculty(long id);
     List<FacultyDto> getFacultiesByColour(String colour);
+    List<FacultyDto> searchFacultyByColourOrName(String searchString);
 }

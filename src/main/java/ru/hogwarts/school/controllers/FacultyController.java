@@ -49,4 +49,9 @@ public class FacultyController {
     public ResponseEntity<List<FacultyDto>> getFacultiesByColour(@RequestParam String colour) {
         return new ResponseEntity<>(facultyService.getFacultiesByColour(colour), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/search")
+    public ResponseEntity<List<FacultyDto>> searchFacultiesByNameOrColour(@RequestParam String searchString) {
+        return new ResponseEntity<>(facultyService.searchFacultyByColourOrName(searchString), HttpStatus.OK);
+    }
 }

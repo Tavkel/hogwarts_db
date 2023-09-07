@@ -229,6 +229,42 @@ class FacultyServiceImplTest {
         verify(facultyRepository, times(1)).findByColourIgnoreCase(colour);
     }
 
+    @Test
+    void searchFacultyByColourOrName_shouldReturnListOfFacultiesNameOrColorContainingSearchString() {
+        when(facultyRepository.searchFacultyByColourOrName(anyString())).thenAnswer(
+                i ->
+                        faculties.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getColour(), i.getArgument(0))
+                                        || StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+
+        );
+
+        var searchStr = "e";
+        var actual = sut.searchFacultyByColourOrName(searchStr);
+        assertEquals(List.of(GRYFFINDOOR_DTO, SLYTHERIN_DTO), actual);
+        verify(facultyRepository, times(1)).searchFacultyByColourOrName(searchStr);
+    }
+
+    @Test
+    void searchFacultyByColourOrName_shouldReturnEmptyListIfNothingFound() {
+        when(facultyRepository.searchFacultyByColourOrName(anyString())).thenAnswer(
+                i ->
+                        faculties.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getColour(), i.getArgument(0))
+                                        || StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+
+        );
+
+        var searchStr = "asd";
+        var actual = sut.searchFacultyByColourOrName(searchStr);
+        assertEquals(List.of(), actual);
+        verify(facultyRepository, times(1)).searchFacultyByColourOrName(searchStr);
+    }
+
     static class FacultyServiceTestData {
         public static FacultyDto GRYFFINDOOR_DTO = new FacultyDto(1L, "Gryffindoor", "Red");
         public static FacultyDto SLYTHERIN_DTO = new FacultyDto(2L, "Slytherin", "Green");

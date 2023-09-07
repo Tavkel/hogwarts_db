@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query(value = "SELECT s " +
             "FROM Student s " +
-            "WHERE LOWER(s.name) LIKE CONCAT('%',?1,'%') " +
+            "WHERE LOWER(s.name) LIKE CONCAT('%',LOWER(?1),'%') " +
             "AND s.deleted = false")
     List<Student> searchStudentByNamePart(String searchString);
     Optional<Student> findFirstByNameIgnoreCase(String name);
