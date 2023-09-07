@@ -2,7 +2,9 @@ package ru.hogwarts.school.services.implementations;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
+import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 import ru.hogwarts.school.services.repositories.StudentRepository;
@@ -41,6 +43,16 @@ public class StudentServiceImpl implements StudentService {
         var result = studentRepository.findById(id);
         if (result.isPresent() && !result.get().getDeleted()) {
             return StudentMapper.MAPPER.fromStudent(result.get());
+        } else {
+            throw new NoSuchElementException("Student not found.");
+        }
+    }
+
+    @Override
+    public FacultyDto getStudentsFaculty(long id) {
+        var dbResponse = studentRepository.findById(id);
+        if (dbResponse.isPresent() && !dbResponse.get().getDeleted()) {
+            return FacultyMapper.MAPPER.fromFaculty(dbResponse.get().getFaculty());
         } else {
             throw new NoSuchElementException("Student not found.");
         }

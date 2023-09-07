@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.helpers.RequestValidator;
 import ru.hogwarts.school.models.domain.Student;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 
@@ -19,9 +20,14 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping(path = "{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<StudentDto> getStudent(@PathVariable long id) {
         return new ResponseEntity<>(studentService.getStudentById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/faculty")
+    public ResponseEntity<FacultyDto> getStudentsFaculty(@PathVariable long id) {
+        return new ResponseEntity<>(studentService.getStudentsFaculty(id), HttpStatus.OK);
     }
 
     @PostMapping

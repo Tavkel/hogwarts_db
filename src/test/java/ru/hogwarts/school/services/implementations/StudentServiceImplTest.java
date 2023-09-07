@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.domain.Faculty;
 import ru.hogwarts.school.models.domain.Student;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
@@ -119,6 +121,39 @@ class StudentServiceImplTest {
         long id = 4L;
 
         var ex = assertThrows(NoSuchElementException.class, () -> sut.getStudentById(id));
+        assertEquals("Student not found.", ex.getMessage());
+        verify(studentRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void getStudentsFaculty_shouldReturnStudentsFaculty() {
+        when(studentRepository.findById(anyLong())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getId() == i.getArgument(0))
+                                .findFirst()
+
+        );
+        long id = 2L;
+        var expectedFaculty = new FacultyDto(2L, null, null);
+        assertEquals(expectedFaculty, sut.getStudentsFaculty(id));
+        verify(studentRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void getStudentsFaculty_shouldThrowNoSuchElementExceptionIfStudentNotFoundOrDeleted() {
+        when(studentRepository.findById(anyLong())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getId() == i.getArgument(0))
+                                .findFirst()
+
+        );
+        long id = 4L;
+
+        var ex = assertThrows(NoSuchElementException.class, () -> sut.getStudentsFaculty(id));
         assertEquals("Student not found.", ex.getMessage());
         verify(studentRepository, times(1)).findById(id);
     }
