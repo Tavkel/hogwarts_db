@@ -233,6 +233,25 @@ class StudentServiceImplTest {
         verify(studentRepository, times(1)).findByAge(age);
     }
 
+    @Test
+    void getStudentsByAgeInRange_shouldReturnListOfStudentsWithAgeWithinBounds() {
+        when(studentRepository.findByAgeBetween(anyInt(), anyInt())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getAge().compareTo(i.getArgument(0)) >= 0)
+                                .filter(f -> f.getAge().compareTo(i.getArgument(1)) <= 0)
+                                .collect(Collectors.toList())
+
+        );
+        int floor = 13;
+        int ceiling = 20;
+        var actual = sut.getStudentsByAgeInRange(floor, ceiling);
+
+        assertEquals(List.of(DRAKO_DTO, CHANG_DTO), actual);
+
+    }
+
     static class StudentServiceTestData {
         public static StudentDto HARRY_DTO = new StudentDto(1L, "Harry", 12, 1, "Gryffindoor");
         public static StudentDto DRAKO_DTO = new StudentDto(2L, "Drako", 17, 2, "Slytherin");

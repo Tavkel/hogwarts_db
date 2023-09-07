@@ -74,4 +74,17 @@ public class StudentServiceImpl implements StudentService {
 
         return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
     }
+
+    @Override
+    public List<StudentDto> getStudentsByAgeInRange(int floor, int ceiling) {
+        var dbResponse = studentRepository.findByAgeBetween(floor, ceiling);
+
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentDto> searchStudentsByName(String searchString) {
+        var dbResponse = studentRepository.searchStudentByNamePart(searchString);
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
 }

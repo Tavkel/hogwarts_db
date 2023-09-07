@@ -10,4 +10,6 @@ public interface StudentService {
     StudentDto updateStudent(StudentDto student);
     StudentDto removeStudent(long id);
     List<StudentDto> getStudentsByAge(int age);
+    List<StudentDto> getStudentsByAgeInRange(int floor, int ceiling);
+    List<StudentDto> searchStudentsByName(String searchString);
 }
