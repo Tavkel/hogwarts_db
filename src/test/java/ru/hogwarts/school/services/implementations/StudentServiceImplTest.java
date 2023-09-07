@@ -249,7 +249,21 @@ class StudentServiceImplTest {
         var actual = sut.getStudentsByAgeInRange(floor, ceiling);
 
         assertEquals(List.of(DRAKO_DTO, CHANG_DTO), actual);
+    }
 
+    @Test
+    void searchStudentsByName_shouldReturnListOfStudentsNamesContainingSearchString() {
+        when(studentRepository.searchStudentByNamePart(anyString())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+        );
+        String searchString = "R";
+        var actual = sut.searchStudentsByName(searchString);
+
+        assertEquals(List.of(HARRY_DTO, DRAKO_DTO), actual);
     }
 
     static class StudentServiceTestData {

@@ -2,8 +2,8 @@ package ru.hogwarts.school.helpers;
 
 public class RequestValidator {
     public static <T extends Number & Comparable<T>> void validateRange(T floor, T ceiling) {
-        if (floor.compareTo(ceiling) >= 0) {
-            throw new IllegalArgumentException("Floor value must be lower than ceiling value.");
+        if (floor.compareTo(ceiling) > 0) {
+            throw new IllegalArgumentException("Floor value must be lower or equal to ceiling value.");
         }
     }
 

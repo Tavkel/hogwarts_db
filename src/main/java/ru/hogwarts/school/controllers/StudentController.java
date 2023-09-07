@@ -50,7 +50,7 @@ public class StudentController {
 
     @GetMapping(path = "/byAgeInRange")
     public ResponseEntity<List<StudentDto>> getStudentsByAgeInRange(@RequestParam int floor, @RequestParam int ceiling) {
-        //RequestValidator.validateRange(floor, ceiling);
+        RequestValidator.validateRange(floor, ceiling);
         return new ResponseEntity<>(studentService.getStudentsByAgeInRange(floor, ceiling), HttpStatus.OK);
     }
 
