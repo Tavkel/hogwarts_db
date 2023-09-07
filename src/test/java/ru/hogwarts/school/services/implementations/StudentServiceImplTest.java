@@ -252,6 +252,24 @@ class StudentServiceImplTest {
     }
 
     @Test
+    void getStudentsByAgeInRange_shouldReturnEmptyListIfNothingFoundOrArgumentsInvalid() {
+        when(studentRepository.findByAgeBetween(anyInt(), anyInt())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getAge().compareTo(i.getArgument(0)) >= 0)
+                                .filter(f -> f.getAge().compareTo(i.getArgument(1)) <= 0)
+                                .collect(Collectors.toList())
+
+        );
+        int floor = 20;
+        int ceiling = 13;
+        var actual = sut.getStudentsByAgeInRange(floor, ceiling);
+
+        assertEquals(List.of(), actual);
+    }
+
+    @Test
     void searchStudentsByName_shouldReturnListOfStudentsNamesContainingSearchString() {
         when(studentRepository.searchStudentByNamePart(anyString())).thenAnswer(
                 i ->
@@ -264,6 +282,21 @@ class StudentServiceImplTest {
         var actual = sut.searchStudentsByName(searchString);
 
         assertEquals(List.of(HARRY_DTO, DRAKO_DTO), actual);
+    }
+
+    @Test
+    void searchStudentsByName_shouldReturnEmptyListIfNothingFoundOrArgumentsInvalid() {
+        when(studentRepository.searchStudentByNamePart(anyString())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+        );
+        String searchString = "asdasd";
+        var actual = sut.searchStudentsByName(searchString);
+
+        assertEquals(List.of(), actual);
     }
 
     static class StudentServiceTestData {
