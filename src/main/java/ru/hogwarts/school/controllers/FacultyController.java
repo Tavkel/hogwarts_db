@@ -3,8 +3,10 @@ package ru.hogwarts.school.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.FacultyService;
 import ru.hogwarts.school.models.dto.FacultyDto;
+import ru.hogwarts.school.services.interfaces.StudentService;
 
 import java.util.List;
 
@@ -12,14 +14,21 @@ import java.util.List;
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService facultyService;
+    private final StudentService studentService;
 
-    public FacultyController(FacultyService facultyService) {
+    public FacultyController(FacultyService facultyService, StudentService studentService) {
         this.facultyService = facultyService;
+        this.studentService = studentService;
     }
 
-    @GetMapping(path = "{id}")
+    @GetMapping(path = "/{id}")
     public ResponseEntity<FacultyDto> getFaculty(@PathVariable long id) {
         return new ResponseEntity<>(facultyService.getFacultyById(id), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/students")
+    public ResponseEntity<List<StudentDto>> getStudentsFromFaculty(@PathVariable long id) {
+        return new ResponseEntity<>(studentService.getStudentsFromFaculty(id), HttpStatus.OK);
     }
 
     @PostMapping

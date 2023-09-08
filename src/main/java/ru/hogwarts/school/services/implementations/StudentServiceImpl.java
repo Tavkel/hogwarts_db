@@ -59,6 +59,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public List<StudentDto> getStudentsFromFaculty(long id) {
+        var dbResponse = studentRepository.getStudentsFromFaculty(id);
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
     public StudentDto updateStudent(StudentDto studentDto) {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
         var result = studentRepository.findById(studentDto.getId());

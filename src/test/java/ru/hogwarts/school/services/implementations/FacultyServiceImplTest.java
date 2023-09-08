@@ -14,6 +14,7 @@ import ru.hogwarts.school.services.repositories.FacultyRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,13 +122,8 @@ class FacultyServiceImplTest {
 
     @Test
     void updateFaculty_shouldPassFacultyToRepoAndReturnSavedFaculty() {
-        when(facultyRepository.findById(anyLong())).thenAnswer(
-                i ->
-                        faculties.stream()
-                                .filter(f -> !f.getDeleted())
-                                .filter(f -> f.getId() == i.getArgument(0))
-                                .findFirst()
-
+        when(facultyRepository.findById(anyLong())).thenReturn(
+                Optional.of(new Faculty(1L, "Gryffindoor", "Red", false))
         );
         when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         var guineaPig = new FacultyDto(1L, "Gryffindoodoo", "Brown");
@@ -159,13 +155,8 @@ class FacultyServiceImplTest {
 
     @Test
     void removeFaculty_shouldPassFacultyWithDeletedFlagToRepoAndReturnDeletedFaculty() {
-        when(facultyRepository.findById(anyLong())).thenAnswer(
-                i ->
-                        faculties.stream()
-                                .filter(f -> !f.getDeleted())
-                                .filter(f -> f.getId() == i.getArgument(0))
-                                .findFirst()
-
+        when(facultyRepository.findById(anyLong())).thenReturn(
+                Optional.of(new Faculty(1L, "Gryffindoor", "Red", true))
         );
         when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         long id = 1L;

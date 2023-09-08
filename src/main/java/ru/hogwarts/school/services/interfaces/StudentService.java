@@ -9,6 +9,7 @@ public interface StudentService {
     StudentDto addStudent(StudentDto student);
     StudentDto getStudentById(long id);
     FacultyDto getStudentsFaculty(long id);
+    List<StudentDto> getStudentsFromFaculty(long id);
     StudentDto updateStudent(StudentDto student);
     StudentDto removeStudent(long id);
     List<StudentDto> getStudentsByAge(int age);
