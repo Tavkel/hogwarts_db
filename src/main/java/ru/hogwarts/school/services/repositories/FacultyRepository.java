@@ -12,4 +12,11 @@ import java.util.Optional;
 public interface FacultyRepository extends JpaRepository<Faculty, Long> {
     Optional<Faculty> findFirstByNameIgnoreCase(String name);
     List<Faculty> findByColourIgnoreCase(String colour);
+
+    @Query(value = "SELECT f FROM Faculty f " +
+            "WHERE LOWER(f.name) LIKE CONCAT('%',LOWER(?1),'%') " +
+            "OR LOWER(f.colour) LIKE CONCAT('%',LOWER(?1),'%') " +
+            "AND f.deleted = false")
+    List<Faculty> searchFacultyByColourOrName(String searchString);
+    List<Faculty> findByNameContainingIgnoreCaseOrColourContainingIgnoreCase(String searchString, String searchString2);
 }

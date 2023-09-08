@@ -3,7 +3,7 @@ package ru.hogwarts.school.models.dto;
 import java.util.Objects;
 
 public class StudentDto {
-    private Long id;
+    private long id;
     private String name;
     private Integer age;
     private int facultyId;

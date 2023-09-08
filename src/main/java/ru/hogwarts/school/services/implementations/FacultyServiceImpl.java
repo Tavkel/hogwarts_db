@@ -74,4 +74,11 @@ public class FacultyServiceImpl implements FacultyService {
         var dbResponse = facultyRepository.findByColourIgnoreCase(colour);
         return dbResponse.stream().filter(f -> !f.getDeleted()).map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
     }
+
+    @Override
+    public List<FacultyDto> searchFacultyByColourOrName(String searchString) {
+        var dbResponse = facultyRepository.searchFacultyByColourOrName(searchString);
+        //var dbResponse = facultyRepository.findByNameContainingIgnoreCaseOrColourContainingIgnoreCase(searchString, searchString);
+        return dbResponse.stream().map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
+    }
 }

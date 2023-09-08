@@ -14,6 +14,7 @@ import ru.hogwarts.school.services.repositories.FacultyRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -121,13 +122,8 @@ class FacultyServiceImplTest {
 
     @Test
     void updateFaculty_shouldPassFacultyToRepoAndReturnSavedFaculty() {
-        when(facultyRepository.findById(anyLong())).thenAnswer(
-                i ->
-                        faculties.stream()
-                                .filter(f -> !f.getDeleted())
-                                .filter(f -> f.getId() == i.getArgument(0))
-                                .findFirst()
-
+        when(facultyRepository.findById(anyLong())).thenReturn(
+                Optional.of(new Faculty(1L, "Gryffindoor", "Red", false))
         );
         when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         var guineaPig = new FacultyDto(1L, "Gryffindoodoo", "Brown");
@@ -159,13 +155,8 @@ class FacultyServiceImplTest {
 
     @Test
     void removeFaculty_shouldPassFacultyWithDeletedFlagToRepoAndReturnDeletedFaculty() {
-        when(facultyRepository.findById(anyLong())).thenAnswer(
-                i ->
-                        faculties.stream()
-                                .filter(f -> !f.getDeleted())
-                                .filter(f -> f.getId() == i.getArgument(0))
-                                .findFirst()
-
+        when(facultyRepository.findById(anyLong())).thenReturn(
+                Optional.of(new Faculty(1L, "Gryffindoor", "Red", true))
         );
         when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         long id = 1L;
@@ -227,6 +218,42 @@ class FacultyServiceImplTest {
         var actual = sut.getFacultiesByColour(colour);
         assertEquals(List.of(), actual);
         verify(facultyRepository, times(1)).findByColourIgnoreCase(colour);
+    }
+
+    @Test
+    void searchFacultyByColourOrName_shouldReturnListOfFacultiesNameOrColorContainingSearchString() {
+        when(facultyRepository.searchFacultyByColourOrName(anyString())).thenAnswer(
+                i ->
+                        faculties.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getColour(), i.getArgument(0))
+                                        || StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+
+        );
+
+        var searchStr = "e";
+        var actual = sut.searchFacultyByColourOrName(searchStr);
+        assertEquals(List.of(GRYFFINDOOR_DTO, SLYTHERIN_DTO), actual);
+        verify(facultyRepository, times(1)).searchFacultyByColourOrName(searchStr);
+    }
+
+    @Test
+    void searchFacultyByColourOrName_shouldReturnEmptyListIfNothingFound() {
+        when(facultyRepository.searchFacultyByColourOrName(anyString())).thenAnswer(
+                i ->
+                        faculties.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getColour(), i.getArgument(0))
+                                        || StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+
+        );
+
+        var searchStr = "asd";
+        var actual = sut.searchFacultyByColourOrName(searchStr);
+        assertEquals(List.of(), actual);
+        verify(facultyRepository, times(1)).searchFacultyByColourOrName(searchStr);
     }
 
     static class FacultyServiceTestData {

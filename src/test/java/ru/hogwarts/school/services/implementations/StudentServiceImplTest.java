@@ -1,19 +1,24 @@
 package ru.hogwarts.school.services.implementations;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
+import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.domain.Faculty;
 import ru.hogwarts.school.models.domain.Student;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +36,13 @@ class StudentServiceImplTest {
     @InjectMocks
     private StudentServiceImpl sut;
 
+    @BeforeAll
+    private static void init() {
+        HARRY.setFaculty(new Faculty(1L, "Gryffindoor", "Red", false));
+        DRAKO.setFaculty(new Faculty(2L, "Slytherin", "Green", false));
+        CHANG.setFaculty(new Faculty(3L, "Ravenclaw", "Blue", false));
+        SEDRIK.setFaculty(new Faculty(4L, "Hufflepuff", "Yellow", false));
+    }
 
     @Test
     void addStudent_shouldPassStudentToRepoAndReturnSavedStudent() {
@@ -53,12 +65,8 @@ class StudentServiceImplTest {
 
     @Test
     void addStudent_deletedStudent_shouldPassStudentToRepoAndReturnSavedStudent() {
-        when(studentRepository.findFirstByNameIgnoreCase(anyString())).thenAnswer(
-                i ->
-                        students.stream()
-                                .filter(f ->
-                                        StringUtils.equalsIgnoreCase(f.getName(), i.getArgument(0)))
-                                .findFirst()
+        when(studentRepository.findFirstByNameIgnoreCase(anyString())).thenReturn(
+                Optional.of(new Student(true, 4L, "Sedrik", 16, 4))
         );
         when(studentRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         var guineaPig = new StudentDto(0L, "Sedrik", 16, 4, "Hufflepuff");
@@ -124,6 +132,39 @@ class StudentServiceImplTest {
     }
 
     @Test
+    void getStudentsFaculty_shouldReturnStudentsFaculty() {
+        when(studentRepository.findById(anyLong())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getId() == i.getArgument(0))
+                                .findFirst()
+
+        );
+        long id = 2L;
+
+        assertEquals(FacultyMapper.MAPPER.fromFaculty(DRAKO.getFaculty()), sut.getStudentsFaculty(id));
+        verify(studentRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void getStudentsFaculty_shouldThrowNoSuchElementExceptionIfStudentNotFoundOrDeleted() {
+        when(studentRepository.findById(anyLong())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getId() == i.getArgument(0))
+                                .findFirst()
+
+        );
+        long id = 4L;
+
+        var ex = assertThrows(NoSuchElementException.class, () -> sut.getStudentsFaculty(id));
+        assertEquals("Student not found.", ex.getMessage());
+        verify(studentRepository, times(1)).findById(id);
+    }
+
+    @Test
     void updateStudent_shouldPassStudentToRepoAndReturnSavedStudent() {
         when(studentRepository.findById(anyLong())).thenAnswer(
                 i ->
@@ -163,13 +204,8 @@ class StudentServiceImplTest {
 
     @Test
     void removeStudent_shouldPassStudentWithDeletedFlagToRepoAndReturnDeletedStudent() {
-        when(studentRepository.findById(anyLong())).thenAnswer(
-                i ->
-                        students.stream()
-                                .filter(f -> !f.getDeleted())
-                                .filter(f -> f.getId() == i.getArgument(0))
-                                .findFirst()
-
+        when(studentRepository.findById(anyLong())).thenReturn(
+                Optional.of(new Student(false, 3L, "Chang", 17, 3))
         );
         when(studentRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
         long id = 3L;
@@ -231,6 +267,84 @@ class StudentServiceImplTest {
         var actual = sut.getStudentsByAge(age);
         assertEquals(List.of(), actual);
         verify(studentRepository, times(1)).findByAge(age);
+    }
+
+    @Test
+    void getStudentsByAgeInRange_shouldReturnListOfStudentsWithAgeWithinBounds() {
+        when(studentRepository.findByAgeBetween(anyInt(), anyInt())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getAge().compareTo(i.getArgument(0)) >= 0)
+                                .filter(f -> f.getAge().compareTo(i.getArgument(1)) <= 0)
+                                .collect(Collectors.toList())
+
+        );
+        int floor = 13;
+        int ceiling = 20;
+        var actual = sut.getStudentsByAgeInRange(floor, ceiling);
+
+        assertEquals(List.of(DRAKO_DTO, CHANG_DTO), actual);
+    }
+
+    @Test
+    void getStudentsByAgeInRange_shouldReturnEmptyListIfNothingFoundOrArgumentsInvalid() {
+        when(studentRepository.findByAgeBetween(anyInt(), anyInt())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getAge().compareTo(i.getArgument(0)) >= 0)
+                                .filter(f -> f.getAge().compareTo(i.getArgument(1)) <= 0)
+                                .collect(Collectors.toList())
+
+        );
+        int floor = 20;
+        int ceiling = 13;
+        var actual = sut.getStudentsByAgeInRange(floor, ceiling);
+
+        assertEquals(List.of(), actual);
+    }
+
+    @Test
+    void searchStudentsByName_shouldReturnListOfStudentsNamesContainingSearchString() {
+        when(studentRepository.searchStudentByNamePart(anyString())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+        );
+        String searchString = "R";
+        var actual = sut.searchStudentsByName(searchString);
+
+        assertEquals(List.of(HARRY_DTO, DRAKO_DTO), actual);
+    }
+
+    @Test
+    void searchStudentsByName_shouldReturnEmptyListIfNothingFoundOrArgumentsInvalid() {
+        when(studentRepository.searchStudentByNamePart(anyString())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0)))
+                                .collect(Collectors.toList())
+        );
+        String searchString = "asdasd";
+        var actual = sut.searchStudentsByName(searchString);
+
+        assertEquals(List.of(), actual);
+    }
+
+    @Test
+    void getStudentsFromFaculty_shouldReturnListOfStudentsOfFacultyWithProvidedId() {
+        when(studentRepository.getStudentsFromFaculty(anyLong())).thenAnswer(
+                i ->
+                        students.stream()
+                                .filter(f -> !f.getDeleted())
+                                .filter(f -> f.getFaculty().getId() == i.getArgument(0))
+                                .collect(Collectors.toList())
+        );
+        assertEquals(List.of(HARRY_DTO), sut.getStudentsFromFaculty(1));
     }
 
     static class StudentServiceTestData {

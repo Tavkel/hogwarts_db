@@ -2,7 +2,9 @@ package ru.hogwarts.school.services.implementations;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
+import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
 import ru.hogwarts.school.services.repositories.StudentRepository;
@@ -47,6 +49,22 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public FacultyDto getStudentsFaculty(long id) {
+        var dbResponse = studentRepository.findById(id);
+        if (dbResponse.isPresent() && !dbResponse.get().getDeleted()) {
+            return FacultyMapper.MAPPER.fromFaculty(dbResponse.get().getFaculty());
+        } else {
+            throw new NoSuchElementException("Student not found.");
+        }
+    }
+
+    @Override
+    public List<StudentDto> getStudentsFromFaculty(long id) {
+        var dbResponse = studentRepository.getStudentsFromFaculty(id);
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
     public StudentDto updateStudent(StudentDto studentDto) {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
         var result = studentRepository.findById(studentDto.getId());
@@ -72,6 +90,19 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDto> getStudentsByAge(int age) {
         var dbResponse = studentRepository.findByAge(age);
 
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentDto> getStudentsByAgeInRange(int floor, int ceiling) {
+        var dbResponse = studentRepository.findByAgeBetween(floor, ceiling);
+
+        return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentDto> searchStudentsByName(String searchString) {
+        var dbResponse = studentRepository.searchStudentByNamePart(searchString);
         return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
     }
 }
