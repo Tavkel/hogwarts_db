@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="gmini (generated)" id="1694333881656-1">
+        <createTable tableName="avatar">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="avatarPK"/>
+            </column>
+            <column name="data" type="BYTEA"/>
+            <column name="file_path" type="VARCHAR(255)"/>
+            <column name="file_size" type="BIGINT"/>
+            <column name="media_type" type="VARCHAR(255)"/>
+            <column name="student_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gmini (generated)" id="1694333881656-2">
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="avatar" constraintName="FK9q8ck2oej8rggukxhflwx4w1o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="students" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
