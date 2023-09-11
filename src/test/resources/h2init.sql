@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS hogwarts;
+SET SCHEMA hogwarts;

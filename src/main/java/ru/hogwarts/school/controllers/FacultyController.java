@@ -36,7 +36,8 @@ public class FacultyController {
         if (faculty.getId() != 0) {
             throw new IllegalArgumentException();
         } else {
-            return new ResponseEntity<>(facultyService.addFaculty(faculty), HttpStatus.OK);
+            var result = facultyService.addFaculty(faculty);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
     }
 

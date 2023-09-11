@@ -39,4 +39,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "WHERE s.age BETWEEN ?1 AND ?2 " +
             "AND s.deleted = false")
     List<Student> findByAgeBetween(int floor, int ceiling);
+
 }
