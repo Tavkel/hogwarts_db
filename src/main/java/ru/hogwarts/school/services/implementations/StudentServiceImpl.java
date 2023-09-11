@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
     public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService {
         var student = StudentMapper.MAPPER.toStudent(studentDto);
         var check = studentRepository.findFirstByNameIgnoreCase(student.getName());
         if (check.isPresent()) {
-            if (check.get().getDeleted()){
+            if (check.get().getDeleted()) {
                 check.get().setDeleted(false);
                 check.get().setName(student.getName());
                 check.get().setAge(student.getAge());
