@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,18 +117,46 @@ class FacultyControllerTest {
     }
 
     @Test
-    void deleteFaculty() {
-        //Soon™
+    void deleteFaculty_shouldReturnFacultyAndStatusOk() throws Exception {
+        long id = 1L;
+        when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
+        when(facultyRepository.findById(anyLong())).thenAnswer(i ->
+                faculties.stream()
+                        .filter(f -> f.getId() == i.getArgument(0))
+                        .findFirst());
+        mockMvc.perform(delete(url + "/" + id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(GRYFFINDOOR_DTO.getName()))
+                .andExpect(jsonPath("$.colour").value(GRYFFINDOOR_DTO.getColour()));
+
     }
 
     @Test
-    void getFacultiesByColour() {
-        //Soon™
+    void getFacultiesByColour_shouldReturnListFacultiesAndStatusOk() throws Exception {
+        when(facultyRepository.findByColourIgnoreCase(anyString())).thenAnswer(i ->
+                faculties.stream()
+                        .filter(s -> StringUtils.equalsIgnoreCase(s.getColour(), i.getArgument(0)))
+                        .collect(Collectors.toList()));
+        mockMvc.perform(get(url + "/byColour?colour=yellow"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(HUFFLEPUFF_DTO.getId()))
+                .andExpect(jsonPath("$.[0].name").value(HUFFLEPUFF_DTO.getName()))
+                .andExpect(jsonPath("$.[0].colour").value(HUFFLEPUFF_DTO.getColour()));
     }
 
     @Test
-    void searchFacultiesByNameOrColour() {
-        //Soon™
+    void searchFacultiesByNameOrColour() throws Exception {
+        String searchString = "r";
+        when(facultyRepository.searchFacultyByColourOrName(anyString())).thenAnswer(i ->
+                faculties.stream()
+                        .filter(f -> StringUtils.containsIgnoreCase(f.getName(), i.getArgument(0))
+                                || StringUtils.containsIgnoreCase(f.getColour(), i.getArgument(0)))
+                        .collect(Collectors.toList()));
+        mockMvc.perform(get(url + "/search?searchString=" + searchString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(GRYFFINDOOR_DTO.getId()))
+                .andExpect(jsonPath("$.[1].id").value(SLYTHERIN_DTO.getId()))
+                .andExpect(jsonPath("$.[2].id").value(RAVENCLAW_DTO.getId()));
     }
 
     static class FacultyControllerTestData {
