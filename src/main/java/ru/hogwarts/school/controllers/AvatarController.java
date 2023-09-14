@@ -1,10 +1,12 @@
 package ru.hogwarts.school.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.spel.EvaluationContextProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.models.domain.Avatar;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("/avatar")
@@ -31,7 +34,6 @@ public class AvatarController {
     @PostMapping(value = "/{studentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable long studentId,
                                                @RequestParam MultipartFile file) throws IOException {
-        //TODO: check for file type?
         if (file.getSize() > fileSizeLimit * 1024L) {
             return new ResponseEntity<>("File too big.", HttpStatus.BAD_REQUEST);
         }
@@ -49,6 +51,20 @@ public class AvatarController {
         headers.setContentLength(avatar.getData().length);
 
         return new ResponseEntity<>(avatar.getData(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/all")
+    public ResponseEntity<List<Avatar>> getAvatarsPaged(@RequestParam int pageN, @RequestParam(required = false) int pageSize) {
+        if (pageSize < 1) {
+            pageSize = 5; // set to default or throw?
+            //throw new IllegalArgumentException("Page size must be greater than zero.");
+        }
+        if (pageN < 1) {
+            pageN = 1; //same question
+            throw new IllegalArgumentException("PageNumber must be greater than zero.");
+        }
+
+        return new ResponseEntity<>(avatarService.getAvatarsPage(pageN, pageSize), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{studentId}/download")

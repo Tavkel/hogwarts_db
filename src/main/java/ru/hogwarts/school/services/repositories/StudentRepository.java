@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.hogwarts.school.models.domain.Faculty;
 import ru.hogwarts.school.models.domain.Student;
+import ru.hogwarts.school.models.dto.StudentDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,4 +41,11 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "AND s.deleted = false")
     List<Student> findByAgeBetween(int floor, int ceiling);
 
+    @Query(value = "SELECT COUNT(case deleted when false then 1 else null end) " +
+            "FROM Student")
+    Integer countNotDeleted();
+
+    @Query(value = "SELECT AVG(case deleted when false then age else null end) " +
+            "FROM Student ")
+    Integer avgAge();
 }

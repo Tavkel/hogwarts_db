@@ -1,6 +1,7 @@
 package ru.hogwarts.school.services.implementations;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.models.domain.Avatar;
@@ -16,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -42,6 +44,12 @@ public class AvatarServiceImpl implements AvatarService {
         studentService.getStudentById(studentId);
         return avatarRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new NoSuchElementException(avatarNotFoundMessage));
+    }
+
+    @Override
+    public List<Avatar> getAvatarsPage(int pageN, int pageSize) {
+        var pageRequest = PageRequest.of(pageN - 1, pageSize);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 
     @Override
