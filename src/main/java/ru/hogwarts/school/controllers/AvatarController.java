@@ -1,12 +1,10 @@
 package ru.hogwarts.school.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.spel.EvaluationContextProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.models.domain.Avatar;

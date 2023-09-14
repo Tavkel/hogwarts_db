@@ -46,10 +46,10 @@ public class FacultyController {
         if (faculty.getId() == 0) {
             throw new IllegalArgumentException();
         } else {
-            return  new ResponseEntity<>(facultyService.updateFaculty(faculty), HttpStatus.OK);
+            return new ResponseEntity<>(facultyService.updateFaculty(faculty), HttpStatus.OK);
         }
     }
-    
+
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<FacultyDto> deleteFaculty(@PathVariable long id) {
         return new ResponseEntity<>(facultyService.removeFaculty(id), HttpStatus.OK);
