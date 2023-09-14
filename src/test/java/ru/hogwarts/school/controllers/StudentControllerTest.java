@@ -127,7 +127,7 @@ class StudentControllerTest {
     @Test
     void getStudentsByAge_shouldReturnListStudentsAndStatusOk() {
         var response = restTemplate.exchange(
-                url + "/byAge?age=17",
+                url + "/age/getBy?age=17",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<StudentDto>>() {});
@@ -138,7 +138,7 @@ class StudentControllerTest {
     @Test
     void getStudentsByAgeInRange_shouldReturnListStudentsAndStatusOk() {
         var response = restTemplate.exchange(
-                url + "/byAgeInRange?floor=15&ceiling=18",
+                url + "/age/getInRange?floor=15&ceiling=18",
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<StudentDto>>() {});
@@ -166,6 +166,47 @@ class StudentControllerTest {
                 new ParameterizedTypeReference<List<StudentDto>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(), response.getBody());
+    }
+
+    @Test
+    void getStudentCount_ShouldReturnAmountOfNotDeletedStudents() {
+        studentService.removeStudent(2);
+        var response = restTemplate.exchange(
+                url + "/count",
+                HttpMethod.GET,
+                null,
+                Integer.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(3, response.getBody());
+    }
+
+    @Test
+    void getAverageAge_shouldReturnAverageAgeOfNotDeletedStudents() {
+        studentService.removeStudent(2);
+        var response = restTemplate.exchange(
+                url + "/age/avg",
+                HttpMethod.GET,
+                null,
+                Integer.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(15, response.getBody());
+    }
+
+    @Test
+    void getLastStudents_shouldReturnListOfLastXStudents() {
+        var response = restTemplate.exchange(
+                url + "/last?amount=2",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<StudentDto>>() {}
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(SEDRIK_DTO, CHANG_DTO), response.getBody());
     }
 
     protected static class StudentControllerTestData{
