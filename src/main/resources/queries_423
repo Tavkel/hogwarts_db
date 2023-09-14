@@ -1,0 +1,7 @@
+select s, f.name
+from hogwarts.students s
+join hogwarts.faculties f on s.faculty_id = f.id;
+
+select s
+from hogwarts.students s
+join hogwarts.avatar a on a.student_id = s.id ;

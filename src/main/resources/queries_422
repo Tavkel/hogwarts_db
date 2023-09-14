@@ -1,0 +1,18 @@
+create table public.person(
+id int8 not null,
+"name" varchar not null,
+age int not null,
+license bool not null,
+car_id int8 not null);
+
+alter table public.person add constraint person_PK primary key(id);
+
+create table public.car(
+id int8 not null,
+brand varchar not null,
+model varchar not null,
+price decimal(10,2));
+
+alter table public.car add constraint car_PK primary key (id);
+
+alter table public.person add constraint person_car_FK foreign key (id) references public.car(id);
