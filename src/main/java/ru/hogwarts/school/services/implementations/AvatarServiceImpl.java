@@ -1,5 +1,7 @@
 package ru.hogwarts.school.services.implementations;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class AvatarServiceImpl implements AvatarService {
     private final AvatarRepository avatarRepository;
     private final StudentService studentService;
     private final String avatarDirectory;
-
+    private final Logger logger = LoggerFactory.getLogger(AvatarServiceImpl.class);
     private final String avatarNotFoundMessage = "Student does not have an avatar.";
 
     public AvatarServiceImpl(AvatarRepository avatarRepository,
@@ -42,23 +44,28 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public Avatar getAvatarPreview(long studentId) {
         studentService.getStudentById(studentId);
+        logger.debug(String.format("Getting avatar for student %d", studentId));
         return avatarRepository.findByStudentId(studentId)
                 .orElseThrow(() -> new NoSuchElementException(avatarNotFoundMessage));
     }
 
     @Override
     public List<Avatar> getAvatarsPage(int pageN, int pageSize) {
+        logger.debug(String.format("Getting avatars. Page %d, page size %d", pageN, pageSize));
         var pageRequest = PageRequest.of(pageN - 1, pageSize);
         return avatarRepository.findAll(pageRequest).getContent();
     }
 
     @Override
     public void saveAvatar(long studentId, MultipartFile file) throws IOException {
+        logger.debug(String.format("Attempting to create a record for avatar for student %d", studentId));
         Avatar avatar;
         try {
             avatar = getAvatarPreview(studentId);
         } catch (NoSuchElementException ex) {
             if (!ex.getMessage().equals(avatarNotFoundMessage)) {
+                logger.warn(String.format("Encountered an error while creating a preview for avatar for student %d", studentId));
+                logger.warn(ex.getMessage());
                 throw ex;
             }
             Student student = new Student();
@@ -67,11 +74,12 @@ public class AvatarServiceImpl implements AvatarService {
             avatar.setStudent(student);
         }
 
-
+        logger.debug("Attempting to write original image to file");
         var filePath = writeAvatarToFile(studentId, file);
         avatarSetUp(file, avatar, filePath);
 
         avatarRepository.saveAndFlush(avatar);
+        logger.debug("Avatar saved");
     }
 
     private String getExtension(String fileName) {
@@ -82,10 +90,12 @@ public class AvatarServiceImpl implements AvatarService {
     }
 
     private void avatarSetUp(MultipartFile file, Avatar avatar, Path filePath) throws IOException{
+        logger.debug("Setting up avatar properties");
         avatar.setFilePath(filePath.toString());
         avatar.setFileSize(file.getSize());
         avatar.setMediaType(file.getContentType());
         avatar.setData(generatePreview(filePath));
+        logger.debug("Avatar properties set");
     }
 
     private Path writeAvatarToFile(long studentId, MultipartFile file) throws IOException {
@@ -100,6 +110,7 @@ public class AvatarServiceImpl implements AvatarService {
         ) {
             bis.transferTo(bos);
         }
+        logger.debug(String.format("Avatar successfully written to file %s", filePath));
         return filePath;
     }
 
@@ -120,6 +131,7 @@ public class AvatarServiceImpl implements AvatarService {
             graphics.dispose();
 
             ImageIO.write(preview, "JPG", baos);
+            logger.debug("Preview for avatar generated");
             return baos.toByteArray();
         }
     }

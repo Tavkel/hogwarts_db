@@ -67,6 +67,7 @@ class FacultyControllerTest {
     @Test
     void getFaculty_shouldReturnFacultyAndStatusOk() throws Exception {
         when(facultyRepository.findById(anyLong())).thenReturn(Optional.of(GRYFFINDOOR));
+
         mockMvc.perform(get(url + "/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(GRYFFINDOOR_DTO.getName()))
@@ -89,6 +90,8 @@ class FacultyControllerTest {
     void addFaculty_shouldReturnFacultyAndStatusOk() throws Exception {
         var faculty = new FacultyDto(0L, "Gryffindoor", "Red");
         when(facultyRepository.saveAndFlush(any())).thenAnswer(i -> i.getArgument(0));
+
+
         mockMvc.perform(post(url)
                         .content(objectMapper.writeValueAsString(faculty))
                         .contentType(MediaType.APPLICATION_JSON)
