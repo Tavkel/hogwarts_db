@@ -1,0 +1,7 @@
+ALTER TABLE public.students ADD CONSTRAINT students_age_check CHECK (age > 15);
+ALTER TABLE public.students ADD CONSTRAINT students_name_unique UNIQUE (name);
+ALTER TABLE public.students ADD CONSTRAINT students_name_unique UNIQUE (name);
+ALTER TABLE public.students ALTER COLUMN name SET NOT NULL;
+ALTER TABLE public.students ALTER COLUMN age SET DEFAULT 20;
+
+ALTER TABLE public.faculties ADD CONSTRAINT faculties_name_and_colour_unique UNIQUE (colour, name);
