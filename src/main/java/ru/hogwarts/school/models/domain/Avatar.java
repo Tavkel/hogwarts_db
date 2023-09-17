@@ -1,5 +1,7 @@
 package ru.hogwarts.school.models.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Objects;
@@ -19,6 +21,7 @@ public class Avatar {
     @Column(name = "data")
     private byte[] data;
     @OneToOne
+    @JsonIgnore
     private Student student;
 
     public Avatar() {

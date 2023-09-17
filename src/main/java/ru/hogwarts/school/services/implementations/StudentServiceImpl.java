@@ -7,6 +7,7 @@ import ru.hogwarts.school.helpers.mapper.StudentMapper;
 import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
+import ru.hogwarts.school.services.repositories.CustomStudentRepository;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
 import java.util.List;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 @Service
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
+    private final CustomStudentRepository customStudentRepository;
 
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository, CustomStudentRepository customStudentRepository) {
         this.studentRepository = studentRepository;
+        this.customStudentRepository = customStudentRepository;
     }
 
     @Override
@@ -104,5 +107,20 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDto> searchStudentsByName(String searchString) {
         var dbResponse = studentRepository.searchStudentByNamePart(searchString);
         return dbResponse.stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer getStudentCount() {
+        return studentRepository.countNotDeleted();
+    }
+
+    @Override
+    public Integer getAverageAge() {
+        return studentRepository.avgAge();
+    }
+
+    @Override
+    public List<StudentDto> getLastStudents(int amount) {
+        return customStudentRepository.findOrderedByIdLimitedTo(amount).stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
     }
 }

@@ -30,4 +30,10 @@ public interface StudentService {
     List<StudentDto> getStudentsByAgeInRange(int floor, int ceiling);
 
     List<StudentDto> searchStudentsByName(String searchString);
+
+    Integer getStudentCount();
+
+    Integer getAverageAge();
+
+    List<StudentDto> getLastStudents(int amount);
 }

@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.helpers.RequestValidator;
-import ru.hogwarts.school.models.domain.Student;
 import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
@@ -48,20 +47,35 @@ public class StudentController {
         return new ResponseEntity<>(studentService.removeStudent(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/byAge")
+    @GetMapping(path = "/age/getBy")
     public ResponseEntity<List<StudentDto>> getStudentsByAge(@RequestParam int age) {
         RequestValidator.validateMustBeGreaterThanZero(age, "Age");
         return new ResponseEntity<>(studentService.getStudentsByAge(age), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/byAgeInRange")
+    @GetMapping(path = "/age/getInRange")
     public ResponseEntity<List<StudentDto>> getStudentsByAgeInRange(@RequestParam int floor, @RequestParam int ceiling) {
         RequestValidator.validateRange(floor, ceiling);
         return new ResponseEntity<>(studentService.getStudentsByAgeInRange(floor, ceiling), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/age/avg")
+    public ResponseEntity<Integer> getAverageAge() {
+        return new ResponseEntity<>(studentService.getAverageAge(), HttpStatus.OK);
+    }
+
     @GetMapping(path = "/search")
-    public ResponseEntity<List<StudentDto>> SearchStudentByName(@RequestParam String searchString){
+    public ResponseEntity<List<StudentDto>> SearchStudentByName(@RequestParam String searchString) {
         return new ResponseEntity<>(studentService.searchStudentsByName(searchString), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/count")
+    public ResponseEntity<Integer> getStudentCount() {
+        return new ResponseEntity<>(studentService.getStudentCount(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/last")
+    public ResponseEntity<List<StudentDto>> getLastStudents(int amount) {
+        return new ResponseEntity<>(studentService.getLastStudents(amount), HttpStatus.OK);
     }
 }

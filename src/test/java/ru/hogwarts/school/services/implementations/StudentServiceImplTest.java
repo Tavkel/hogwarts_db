@@ -12,7 +12,6 @@ import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
 import ru.hogwarts.school.models.domain.Faculty;
 import ru.hogwarts.school.models.domain.Student;
-import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
