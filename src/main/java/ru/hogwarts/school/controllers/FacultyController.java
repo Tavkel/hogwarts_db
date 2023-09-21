@@ -64,4 +64,9 @@ public class FacultyController {
     public ResponseEntity<List<FacultyDto>> searchFacultiesByNameOrColour(@RequestParam String searchString) {
         return new ResponseEntity<>(facultyService.searchFacultyByColourOrName(searchString), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/longest-name")
+    public ResponseEntity<String> getLongestFacultyName() {
+        return new ResponseEntity<>(facultyService.getLongestFacultyName(), HttpStatus.OK);
+    }
 }

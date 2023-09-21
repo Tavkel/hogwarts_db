@@ -11,4 +11,5 @@ public interface FacultyService {
     FacultyDto removeFaculty(long id);
     List<FacultyDto> getFacultiesByColour(String colour);
     List<FacultyDto> searchFacultyByColourOrName(String searchString);
+    String getLongestFacultyName();
 }

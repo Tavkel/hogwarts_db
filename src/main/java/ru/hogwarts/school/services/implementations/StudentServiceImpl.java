@@ -1,11 +1,13 @@
 package ru.hogwarts.school.services.implementations;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exceptions.EntryAlreadyExistsException;
 import ru.hogwarts.school.helpers.mapper.FacultyMapper;
 import ru.hogwarts.school.helpers.mapper.StudentMapper;
+import ru.hogwarts.school.models.domain.Student;
 import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.interfaces.StudentService;
@@ -140,5 +142,25 @@ public class StudentServiceImpl implements StudentService {
     public List<StudentDto> getLastStudents(int amount) {
         logger.debug(String.format("Attempting to fetch %d last students", amount));
         return customStudentRepository.findOrderedByIdLimitedTo(amount).stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getNamesStartingWithD() {
+        return studentRepository.findAll()
+                .stream()
+                .map(Student::getName)
+                .filter(n -> StringUtils.startsWithIgnoreCase(n, "d"))
+                .map(String::toUpperCase)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Double getAverageAgeStream() {
+        return studentRepository.findAll()
+                .stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0);
     }
 }

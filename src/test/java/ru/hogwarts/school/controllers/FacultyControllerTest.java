@@ -18,6 +18,7 @@ import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.models.dto.StudentDto;
 import ru.hogwarts.school.services.implementations.FacultyServiceImpl;
 import ru.hogwarts.school.services.implementations.StudentServiceImpl;
+import ru.hogwarts.school.services.repositories.CustomStudentRepository;
 import ru.hogwarts.school.services.repositories.FacultyRepository;
 import ru.hogwarts.school.services.repositories.StudentRepository;
 
@@ -54,6 +55,9 @@ class FacultyControllerTest {
     @MockBean
     StudentRepository studentRepository;
 
+    @MockBean
+    CustomStudentRepository customStudentRepository;
+
     private String url = "/faculty";
 
     @BeforeAll
@@ -66,12 +70,12 @@ class FacultyControllerTest {
 
     @Test
     void getFaculty_shouldReturnFacultyAndStatusOk() throws Exception {
-        when(facultyRepository.findById(anyLong())).thenReturn(Optional.of(GRYFFINDOOR));
+        when(facultyRepository.findById(anyLong())).thenReturn(Optional.of(HUFFLEPUFF));
 
-        mockMvc.perform(get(url + "/1"))
+        mockMvc.perform(get(url + "/4"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(GRYFFINDOOR_DTO.getName()))
-                .andExpect(jsonPath("$.colour").value(GRYFFINDOOR_DTO.getColour()));
+                .andExpect(jsonPath("$.name").value(HUFFLEPUFF_DTO.getName()))
+                .andExpect(jsonPath("$.colour").value(HUFFLEPUFF_DTO.getColour()));
     }
 
     @Test
@@ -160,6 +164,14 @@ class FacultyControllerTest {
                 .andExpect(jsonPath("$.[0].id").value(GRYFFINDOOR_DTO.getId()))
                 .andExpect(jsonPath("$.[1].id").value(SLYTHERIN_DTO.getId()))
                 .andExpect(jsonPath("$.[2].id").value(RAVENCLAW_DTO.getId()));
+    }
+
+    @Test
+    void getLongestFacultyName_shouldReturnLongestFacultyNameAndStatusOk() throws Exception {
+        when(facultyRepository.findAll()).thenReturn(faculties);
+        mockMvc.perform(get(url + "/longest-name"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(GRYFFINDOOR_DTO.getName()));
     }
 
     static class FacultyControllerTestData {
