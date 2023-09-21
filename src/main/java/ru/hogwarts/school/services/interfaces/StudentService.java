@@ -36,4 +36,7 @@ public interface StudentService {
     Integer getAverageAge();
 
     List<StudentDto> getLastStudents(int amount);
+
+    void playWithThreads();
+    void playWithThreads2();
 }

@@ -141,4 +141,64 @@ public class StudentServiceImpl implements StudentService {
         logger.debug(String.format("Attempting to fetch %d last students", amount));
         return customStudentRepository.findOrderedByIdLimitedTo(amount).stream().map(StudentMapper.MAPPER::fromStudent).collect(Collectors.toList());
     }
+
+    @Override
+    public void playWithThreads() {
+        var students = customStudentRepository.findOrderedByIdLimitedTo(6).stream().map(StudentMapper.MAPPER::fromStudent).toList();
+        print(students.get(0));
+        print(students.get(1));
+
+        var firstThread = new Thread(() -> {
+            print(students.get(2));
+            print(students.get(3));
+        });
+        var secondThread = new Thread(() -> {
+            print(students.get(4));
+            print(students.get(5));
+        });
+        firstThread.setName("first");
+        secondThread.setName("second");
+
+        firstThread.start();
+        secondThread.start();
+    }
+
+    @Override
+    public void playWithThreads2() {
+        var students = customStudentRepository.findOrderedByIdLimitedTo(6).stream().map(StudentMapper.MAPPER::fromStudent).toList();
+        print2(students.get(0));
+        print2(students.get(1));
+
+        var firstThread = new Thread(() -> {
+            print2(students.get(2));
+            print2(students.get(3));
+        });
+        var secondThread = new Thread(() -> {
+            print2(students.get(4));
+            print2(students.get(5));
+        });
+        firstThread.setName("first");
+        secondThread.setName("second");
+
+        firstThread.start();
+        secondThread.start();
+    }
+
+    private void print(StudentDto student) {
+        logger.info(student.getName());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private synchronized void print2(StudentDto student) {
+        logger.info(student.getName());
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

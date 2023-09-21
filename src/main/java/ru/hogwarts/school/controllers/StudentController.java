@@ -1,5 +1,7 @@
 package ru.hogwarts.school.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
+    private final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
@@ -77,5 +80,14 @@ public class StudentController {
     @GetMapping(path = "/last")
     public ResponseEntity<List<StudentDto>> getLastStudents(int amount) {
         return new ResponseEntity<>(studentService.getLastStudents(amount), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "threads-playground")
+    public void poke() {
+        studentService.playWithThreads();
+    }
+    @GetMapping(path = "threads-playground2")
+    public void poke2() {
+        studentService.playWithThreads2();
     }
 }
