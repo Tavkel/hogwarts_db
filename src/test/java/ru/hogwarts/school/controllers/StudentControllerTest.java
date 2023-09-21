@@ -130,7 +130,8 @@ class StudentControllerTest {
                 url + "/age/getBy?age=17",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<StudentDto>>() {});
+                new ParameterizedTypeReference<List<StudentDto>>() {
+                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(DRAKO_DTO, CHANG_DTO), response.getBody());
     }
@@ -141,7 +142,8 @@ class StudentControllerTest {
                 url + "/age/getInRange?floor=15&ceiling=18",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<StudentDto>>() {});
+                new ParameterizedTypeReference<List<StudentDto>>() {
+                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(DRAKO_DTO, CHANG_DTO, SEDRIK_DTO), response.getBody());
     }
@@ -152,7 +154,8 @@ class StudentControllerTest {
                 url + "/search?searchString=Harry",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<StudentDto>>() {});
+                new ParameterizedTypeReference<List<StudentDto>>() {
+                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(HARRY_DTO), response.getBody());
     }
@@ -163,7 +166,8 @@ class StudentControllerTest {
                 url + "/search?searchString=ASDASD",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<StudentDto>>() {});
+                new ParameterizedTypeReference<List<StudentDto>>() {
+                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(), response.getBody());
     }
@@ -202,14 +206,42 @@ class StudentControllerTest {
                 url + "/last?amount=2",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<StudentDto>>() {}
+                new ParameterizedTypeReference<List<StudentDto>>() {
+                }
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(List.of(SEDRIK_DTO, CHANG_DTO), response.getBody());
     }
 
-    protected static class StudentControllerTestData{
+    @Test
+    void getNamesStartingWithA_shouldReturnListOfNamesStartingWithDAndStatusOk() {
+        var response = restTemplate.exchange(
+                url + "/starts-with-d",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<String>>() {
+                }
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(DRAKO_DTO.getName().toUpperCase()), response.getBody());
+    }
+
+    @Test
+    void getAverageAgeStream_shouldReturnAverageAgeOfAllStudentsAndStatusOk() {
+        var response = restTemplate.exchange(
+                url + "/age/avg-stream",
+                HttpMethod.GET,
+                null,
+                Double.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(15.5, response.getBody());
+    }
+
+    protected static class StudentControllerTestData {
         public static FacultyDto GRYFFINDOOR_DTO = new FacultyDto(1L, "Gryffindoor", "Red");
         public static FacultyDto SLYTHERIN_DTO = new FacultyDto(2L, "Slytherin", "Green");
         public static FacultyDto RAVENCLAW_DTO = new FacultyDto(3L, "Ravenclaw", "Blue");

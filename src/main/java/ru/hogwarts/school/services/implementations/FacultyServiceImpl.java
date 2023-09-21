@@ -10,6 +10,7 @@ import ru.hogwarts.school.models.dto.FacultyDto;
 import ru.hogwarts.school.services.interfaces.FacultyService;
 import ru.hogwarts.school.services.repositories.FacultyRepository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -89,5 +90,14 @@ public class FacultyServiceImpl implements FacultyService {
         logger.debug(String.format("Searching for faculties with name or colour containing \"%s\"", searchString));
         var dbResponse = facultyRepository.searchFacultyByColourOrName(searchString);
         return dbResponse.stream().map(FacultyMapper.MAPPER::fromFaculty).collect(Collectors.toList());
+    }
+
+    @Override
+    public String getLongestFacultyName() {
+        return facultyRepository.findAll()
+                .stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElseThrow(() -> new NoSuchElementException("Faculty not found."));
     }
 }

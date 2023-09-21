@@ -78,4 +78,14 @@ public class StudentController {
     public ResponseEntity<List<StudentDto>> getLastStudents(int amount) {
         return new ResponseEntity<>(studentService.getLastStudents(amount), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/starts-with-d")
+    public ResponseEntity<List<String>> getNamesStartingWithD() {
+        return new ResponseEntity<>(studentService.getNamesStartingWithD(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/age/avg-stream")
+    public ResponseEntity<Double> getAverageAgeStream() {
+        return new ResponseEntity<>(studentService.getAverageAgeStream(), HttpStatus.OK);
+    }
 }

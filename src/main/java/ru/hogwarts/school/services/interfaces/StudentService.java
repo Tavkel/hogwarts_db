@@ -36,4 +36,8 @@ public interface StudentService {
     Integer getAverageAge();
 
     List<StudentDto> getLastStudents(int amount);
+
+    List<String> getNamesStartingWithD();
+
+    Double getAverageAgeStream();
 }
